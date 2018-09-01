@@ -1,0 +1,57 @@
+%
+%
+%
+try(X) :- process([3/3/0/0/left],X).
+
+%goal state - 3 cannibals and 3 missionaries on the right side
+process([0/0/3/3/X|T],[0/0/3/3/X|T]).
+
+%Recursive function to try game states. Try moves, and make sure that the new 
+%state hasn't already been tried. Then recurse.
+%LC = Left Cannibals
+%LM = Left Missionaries
+%RC = Right Cannibals
+%RM = Right Missionaries
+%S = Boat side
+process([LC/LM/RC/RM/S|T],Result) :-
+	move(LC/LM/RC/RM/S,LC2/LM2/RC2/RM2/S2),
+    valid(LC2/LM2/RC2/RM2),
+    not(member(LC2/LM2/RC2/RM2/S2,T)),
+    add(LC/LM/RC/RM/S,T,L1),
+    add(LC2/LM2/RC2/RM2/S2,L1,L2),
+    process(L2, Result).
+
+valid(LC/LM/RC/RM) :-
+	( LC =< LM ; LM = 0), ( RC =< RM ; RM = 0),
+	LC > -1, RC > -1, LM > -1, LC > -1,
+	LC < 4, RC < 4, LM < 4, LC < 4.
+
+move(LC/LM/RC/RM/left, LC2/LM/RC2/RM/right) :-
+    LC2 is LC - 2, RC2 is RC + 2.
+move(LC/LM/RC/RM/right, LC2/LM/RC2/RM/left) :-
+    LC2 is LC + 2, RC2 is RC - 2.
+
+move(LC/LM/RC/RM/left, LC/LM2/RC/RM2/right) :-
+    LM2 is LM - 2, RM2 is RM + 2.
+move(LC/LM/RC/RM/right, LC/LM2/RC/RM2/left) :-
+    LM2 is LM + 2, RM2 is RM - 2.
+
+move(LC/LM/RC/RM/left, LC2/LM2/RC2/RM2/right) :-
+    LM2 is LM - 1, RM2 is RM + 1, LC2 is LC - 1, RC2 is RC + 1.
+move(LC/LM/RC/RM/right, LC2/LM2/RC2/RM2/left) :-
+    LM2 is LM + 1, RM2 is RM - 1, LC2 is LC + 1, RC2 is RC - 1.
+
+move(LC/LM/RC/RM/left, LC2/LM/RC2/RM/right) :-
+    LC2 is LC - 1, RC2 is RC + 1.
+move(LC/LM/RC/RM/right, LC2/LM/RC2/RM/left) :-
+    LC2 is LC + 1, RC2 is RC - 1.
+
+move(LC/LM/RC/RM/left, LC/LM2/RC/RM2/right) :-
+    LM2 is LM - 1, RM2 is RM + 1.
+move(LC/LM/RC/RM/right, LC/LM2/RC/RM2/left) :-
+    LM2 is LM + 1, RM2 is RM - 1.
+
+add(X,L,[X|L]).
+/** <examples>
+?- try(X).
+*/
